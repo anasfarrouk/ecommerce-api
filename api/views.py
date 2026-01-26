@@ -22,8 +22,7 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     ordering_fields = ['unit_price',]
     search_fields = ['name', 'description']
 
-class CartViewSet(viewsets.GenericViewSet,
-                  mixins.RetrieveModelMixin):
+class CartViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
     queryset = CartModel.objects.all()
     serializer_class = CartSerializer
     permission_classes = [IsAuthenticated]
