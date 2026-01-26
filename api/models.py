@@ -42,43 +42,32 @@ class ProductModel(models.Model):
     description = models.TextField()
     unit_price = models.DecimalField(max_digits=5, decimal_places=2)
     stock_quantity = models.PositiveIntegerField()
-    
-class SelectedProductModel(models.Model):
-    product = models.OneToOneField(ProductModel,
-                                   on_delete=models.CASCADE,
-                                   primary_key=True,
-                                   related_name="selected_by")
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    quantity_selected = models.PositiveIntegerField()
-    selling_price = models.DecimalField(max_digits=5, decimal_places=2, editable=False)
+    is_active = models.BooleanField(default=True)
+
+class CartModel(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL,
+                                on_delete=models.CASCADE,
+                                related_name="owner_of",
+                                )
+    checked_out = models.BooleanField(default=False)
+
+    def add_or_update_item(self, prd, qty):
+        item, created = CartItemModel.objects.update_or_create(cart=self, product=prd, defaults={"quantity":qty})
+        return item
+
+    def total(self):
+        total = Decimal("0.00")
+        items = CartItemModel.objects.filter(cart=self).select_related("product")
+        for item in items:
+            total += (item.product.unit_price * item.quantity)
+        return total
+
+class CartItemModel(models.Model):
+    cart = models.ForeignKey(CartModel, on_delete=models.CASCADE)
+    product = models.ForeignKey(ProductModel, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(blank=False)
+    added_at = models.DateTimeField(auto_now_add=True)
+    last_modified = models.DateTimeField(auto_now=True)
 
     class Meta:
-        constraints = [models.UniqueConstraint(fields=['user', 'product'], name='unique_user_product')]
-
-    def clean(self):
-        if self.quantity_selected is None or self.quantity_selected < 0:
-            raise ValidationError({'quantity_selected': 'Must be a non-negative integer.'})
-        if not hasattr(self.product, 'unit_price') or self.product.unit_price is None:
-            raise ValidationError({'product': 'Related product must have a unit_price.'})
-
-    def save(self, *args, **kwargs):
-        # Ensure product is loaded (handle unsaved product instance)
-        unit_price = getattr(self.product, 'unit_price', None)
-        if unit_price is None:
-            # Try to fetch from DB if product is a FK and not fully loaded
-            if self.product_id:
-                unit_price = ProductModel.objects.filter(pk=self.product_id).values_list('unit_price', flat=True).first()
-        if unit_price is None:
-            raise ValueError('product.unit_price is required to calculate selling_price.')
-
-        # Use Decimal arithmetic
-        q = Decimal(self.quantity_selected)
-        up = Decimal(unit_price)
-        total = (q * up).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
-        self.selling_price = total
-
-        # Run full clean (optional) to enforce constraints
-        self.full_clean(exclude=['selling_price'])
-
-        super().save(*args, **kwargs)
-
+        constraints = [models.UniqueConstraint(fields=["cart", "product"], name="unique_product"),]

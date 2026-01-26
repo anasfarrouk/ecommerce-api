@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import ProductModel, SelectedProductModel
+from .models import ProductModel, CartModel, CartItemModel
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -7,35 +7,27 @@ class ProductSerializer(serializers.ModelSerializer):
         model = ProductModel
         fields = '__all__'
 
-class SelectedProductSerializer(serializers.ModelSerializer):
+class CartItemSerializer(serializers.ModelSerializer):
+    product = ProductSerializer(read_only=True)
+    product_id = serializers.PrimaryKeyRelatedField(required=False, write_only=True, source="product", queryset=ProductModel.objects.all())
+
     class Meta:
-        model = SelectedProductModel
-        fields = '__all__'
-        read_only_fields = ['user', 'selling_price']
+        model = CartItemModel
+        fields = ["id", "cart", "product", "product_id", "quantity", "added_at", "last_modified"]
+        read_only_fields = ["id", "cart", "added_at", "last_modified"]
 
+    def create(self, valideted_data):
+        return CartItemModel.objects.create(**validated_data)
 
-    def validate(self, attrs):
-        request = self.context.get('request')
-        user = request.user if request else attrs.get('user')
-        product = attrs.get('product') or getattr(self.instance, 'product', None)
+class CartSerializer(serializers.ModelSerializer):
+    items = CartItemSerializer(source="cartitemmodel_set", many=True, read_only=True)
+    total = serializers.SerializerMethodField()
 
-        # For create: instance is None
-        if self.instance is None:
-            if SelectedProductModel.objects.filter(user=user, product=product).exists():
-                raise serializers.ValidationError('You already have a selected product for this product.')
-        else:
-            # For update: ensure changing product or user doesn't create a duplicate
-            new_user = user or self.instance.user
-            new_product = product or self.instance.product
-            qs = SelectedProductModel.objects.filter(user=new_user, product=new_product).exclude(product=self.instance.product)
-            if qs.exists():
-                raise serializers.ValidationError('Another selected product with this product already exists for this user.')
-        return attrs
+    class Meta:
+        model = CartModel
+        fields = ["id", "user", "checked_out", "items", "total"]
+        read_only_fields = ["id", "user", "items", "total"]
 
-    def create(self, validated_data):
-        # ensure user is set from request
-        request = self.context.get('request')
-        if request and not validated_data.get('user'):
-            validated_data['user'] = request.user
-        return super().create(validated_data)
+    def get_total(self, obj):
+        return str(obj.total())
 
