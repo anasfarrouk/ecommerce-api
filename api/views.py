@@ -10,7 +10,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 
 # Create your views here.
 def get_user_cart(user):
-    cart, _ = CartModel.objects.get_or_create(user=user, checked_out=False)
+    cart, created = CartModel.objects.get_or_create(user=user, checked_out=False)
     return cart
 
 class ProductViewSet(viewsets.ReadOnlyModelViewSet):

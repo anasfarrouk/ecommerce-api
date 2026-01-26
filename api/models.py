@@ -2,7 +2,7 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseU
 from django.conf import settings
 from django.db import models
 from django.core.exceptions import ValidationError
-from decimal import Decimal, ROUND_HALF_UP
+from decimal import Decimal
 
 
 # Create your models here.
@@ -45,11 +45,11 @@ class ProductModel(models.Model):
     is_active = models.BooleanField(default=True)
 
 class CartModel(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL,
-                                on_delete=models.CASCADE,
-                                related_name="owner_of",
-                                )
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     checked_out = models.BooleanField(default=False)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["user"], condition=models.Q(checked_out=False), name="unique_cart"),]
 
     def add_or_update_item(self, prd, qty):
         item, created = CartItemModel.objects.update_or_create(cart=self, product=prd, defaults={"quantity":qty})
