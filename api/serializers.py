@@ -48,6 +48,6 @@ class OrderSerializer(serializers.ModelSerializer):
     def get_items(self, order):
         # load cart items for the order's cart
         qs = CartItemModel.objects.filter(cart=order.cart).select_related("product")
-        return OrderItemSerializer(qs, many=True).data
+        return CartItemSerializer(qs, many=True).data
 
 
