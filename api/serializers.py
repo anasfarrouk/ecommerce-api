@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import ProductModel, CartModel, CartItemModel
+from .models import ProductModel, CartModel, CartItemModel, OrderModel
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -22,6 +22,7 @@ class CartItemSerializer(serializers.ModelSerializer):
 class CartSerializer(serializers.ModelSerializer):
     items = CartItemSerializer(source="cartitemmodel_set", many=True, read_only=True)
     total = serializers.SerializerMethodField()
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = CartModel
@@ -30,4 +31,23 @@ class CartSerializer(serializers.ModelSerializer):
 
     def get_total(self, obj):
         return str(obj.total())
+
+class OrderSerializer(serializers.ModelSerializer):
+    items = serializers.SerializerMethodField()
+    amount = serializers.DecimalField(max_digits=12, decimal_places=2, read_only=True)
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
+    stripe_session_id = serializers.CharField(read_only=True)
+    paid = serializers.BooleanField(read_only=True)
+    created_at = serializers.DateTimeField(read_only=True)
+
+    class Meta:
+        model = OrderModel
+        fields = ["id", "user", "cart", "items", "amount", "stripe_session_id", "paid", "created_at"]
+        read_only_fields = ["id", "user", "items", "amount", "stripe_session_id", "paid", "created_at"]
+
+    def get_items(self, order):
+        # load cart items for the order's cart
+        qs = CartItemModel.objects.filter(cart=order.cart).select_related("product")
+        return OrderItemSerializer(qs, many=True).data
+
 

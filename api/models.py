@@ -37,10 +37,12 @@ class CategoryModel(models.Model):
     name = models.CharField(max_length=30, unique=True)
 
 class ProductModel(models.Model):
+    stripe_product_id = models.CharField(max_length=64, null=True, blank=True)
     name = models.CharField(max_length=250, blank=False, null=False)
     category = models.ForeignKey(CategoryModel, on_delete=models.CASCADE)
     description = models.TextField()
     unit_price = models.DecimalField(max_digits=5, decimal_places=2)
+    stripe_price_id = models.CharField(max_length=64, null=True, blank=True)
     stock_quantity = models.PositiveIntegerField()
     is_active = models.BooleanField(default=True)
 
@@ -71,3 +73,25 @@ class CartItemModel(models.Model):
 
     class Meta:
         constraints = [models.UniqueConstraint(fields=["cart", "product"], name="unique_product"),]
+
+class OrderModel(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    cart = models.ForeignKey(CartModel, on_delete=models.CASCADE)
+    stripe_session_id = models.CharField(max_length=256, unique=True, null=True, blank=True)
+    amount = models.DecimalField(max_digits=12, decimal_places=2)  # store snapshot
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    paid = models.BooleanField(default="False")
+
+    @classmethod
+    def create_from_cart(cls, cart, user, stripe_session_id=None):
+        if cart.user != user:
+            raise ValueError("Cart owner mismatch")
+        if cart.checked_out:
+            raise ValueError("Cart already checked out")
+        amount = cart.total()
+        order = cls.objects.create(user=user, cart=cart, amount=amount, stripe_session_id=stripe_session_id)
+        cart.checked_out = True
+        cart.save(update_fields=["checked_out"])
+        return order
+
