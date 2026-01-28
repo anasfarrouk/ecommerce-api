@@ -26,7 +26,7 @@ Cloud native RESTful API for an e-commerce platform supporting products, carts, 
   - ```python manage.py runserver 0.0.0.0:8000```
 - Production (example using gunicorn):
   - ```pip install gunicorn```
-  - ```gunicorn config.wsgi:application --bind 0.0.0.0:8000```
+  - ```gunicorn project.wsgi:application --bind 0.0.0.0:8000```
 ## API Documentation 🔖
 - Schema at:
   - ```/api/schmea/```
