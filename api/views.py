@@ -98,31 +98,6 @@ class CartViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
                 cart.save(update_fields=["checked_out"])
             return Response({"detail": "Stripe error", "error": str(e)}, status=status.HTTP_502_BAD_GATEWAY)
 
-#class CartViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
-#    queryset = CartModel.objects.all()
-#    serializer_class = CartSerializer
-#    permission_classes = [IsAuthenticated]
-#
-#    def get_object(self):
-#        # always return the current user's active cart
-#        return get_user_cart(self.request.user)
-#
-#    @action(detail=False, methods=["get"])
-#    def me(self, request):
-#        cart = self.get_object()
-#        return Response(self.get_serializer(cart).data)
-#
-#    @action(detail=False, methods=["post"])
-#    def checkout(self, request):
-#        cart = self.get_object()
-#        order = Order.objects.create(
-#                user = self.request.user,
-#                stripe_session_id = '',
-#                paid = False
-#        cart.checked_out = True
-#        cart.save()
-#        return Response({"status": "checked_out"}, status=status.HTTP_200_OK)
-
 class CartItemViewSet(viewsets.ModelViewSet):
     queryset = CartItemModel.objects.all()
     serializer_class = CartItemSerializer

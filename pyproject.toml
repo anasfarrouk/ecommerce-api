@@ -15,4 +15,5 @@ dependencies = [
     "markdown>=3.10.1",
     "psycopg2>=2.9.11",
     "pytest>=9.0.2",
+    "stripe>=14.3.0",
 ]
