@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import ProductModel, CartModel, CartItemModel, OrderModel
+from typing import List, Dict, Any
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -29,7 +30,7 @@ class CartSerializer(serializers.ModelSerializer):
         fields = ["id", "user", "checked_out", "items", "total"]
         read_only_fields = ["id", "user", "items", "total"]
 
-    def get_total(self, obj):
+    def get_total(self, obj) -> str:
         return str(obj.total())
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -45,7 +46,7 @@ class OrderSerializer(serializers.ModelSerializer):
         fields = ["id", "user", "cart", "items", "amount", "stripe_session_id", "paid", "created_at"]
         read_only_fields = ["id", "user", "items", "amount", "stripe_session_id", "paid", "created_at"]
 
-    def get_items(self, order):
+    def get_items(self, order) -> List[Dict[str, Any]]:
         # load cart items for the order's cart
         qs = CartItemModel.objects.filter(cart=order.cart).select_related("product")
         return CartItemSerializer(qs, many=True).data
