@@ -11,7 +11,8 @@ Cloud native RESTful API for an e-commerce platform supporting products, carts, 
 - ```python manage.py runserver```
 ## Features ⚙️
 - Horizontal scalability
-- Product CRUD with categories
+- Product CRUD with categories and tags
+- Inventory management from the admin page
 - Cart, checkout, order lifecycle
 - Stripe payments and webhooks (test mode supported)
 - JWT authentication (access + refresh tokens)
