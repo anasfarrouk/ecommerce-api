@@ -1,5 +1,6 @@
 # My-Ecom API 🛒
 Cloud native RESTful API for an e-commerce platform supporting products, carts, orders, Stripe payments, and user auth.
+![use-case design](./My-Ecom.png)
 ## Quick Start ⚡️
 - ```git clone ```
 - ```cd ecommerce-api```
