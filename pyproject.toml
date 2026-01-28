@@ -11,6 +11,8 @@ dependencies = [
     "djoser>=2.3.3",
     "dotenv>=0.9.9",
     "drf-spectacular>=0.29.0",
+    "gunicorn>=24.1.1",
     "markdown>=3.10.1",
+    "psycopg2>=2.9.11",
     "pytest>=9.0.2",
 ]
