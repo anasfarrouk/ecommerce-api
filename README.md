@@ -41,4 +41,4 @@ Cloud native RESTful API for an e-commerce platform supporting products, carts, 
   - ```python manage.py collectstatic --noinput```
 - Configure HTTPS and publicly reachable Stripe webhook endpoint.
 ## License ⚖️
-This project is distributed under [aGPLv3](./LICENSE) license.
+This project is distributed under [MIT](./LICENSE) license.
