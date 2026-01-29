@@ -16,15 +16,11 @@ Cloud native RESTful API for an e-commerce platform supporting products, carts, 
 - JWT authentication (access + refresh tokens)
 - Pagination, filtering, search, rate limiting
 ## Requirements 🔗
-- Python >=3.10
-- PostgreSQL >=12
+- Python >=3.10 (for local testing)
+- uv >=0.9.26 (optional)
+- PostgreSQL >=12 (for database)
+- Docker >=28.5 (optional)
 - Stripe test account (for webhook secret and API keys)
-## Running (local) 🔌
-- Dev server:
-  - ```python manage.py runserver 0.0.0.0:8000```
-- Production (example using gunicorn):
-  - ```pip install gunicorn```
-  - ```gunicorn project.wsgi:application --bind 0.0.0.0:8000```
 ## API Documentation 🔖
 - Schema at:
   - ```/api/schmea/```
@@ -33,7 +29,9 @@ Cloud native RESTful API for an e-commerce platform supporting products, carts, 
   - ```/api/docs/redoc/```
 - OpenAPI version: v3
 ## Testing 🧪
-- Run tests: ```python manage.py test```
+- Run tests:
+  - ```python manage.py migrate```
+  - ```python manage.py test```
 ## Deployment notes 🗒
 - Set environment variables in production (SECRET_KEY, DATABASE_URL, STRIPE keys).
 - Check deploy readiness:
