@@ -4,12 +4,9 @@ Cloud native RESTful API for an e-commerce platform supporting products, carts, 
 ## Quick Start ⚡️
 - ```git clone ```
 - ```cd ecommerce-api```
-- ```python -m venv .venv && source .venv/bin/activate```
 - ```cp .env.example .env``` (edit values)
-- ```pip install -r requirements.txt```
-- ```python manage.py migrate```
-- ```python manage.py createsuperuser```
-- ```python manage.py runserver```
+- ```docker build -t myecom .```
+- ```docker run -p 8000:8000 --name MyEcom-API myecom```
 ## Features ⚙️
 - Horizontal scalability
 - Product CRUD with categories and tags
@@ -28,11 +25,6 @@ Cloud native RESTful API for an e-commerce platform supporting products, carts, 
 - Production (example using gunicorn):
   - ```pip install gunicorn```
   - ```gunicorn project.wsgi:application --bind 0.0.0.0:8000```
-## Running (Docker) 🐳
-- Build the Docker image:
-  - ```docker build -t myecom .```
-- Run the Docker container:
-  - ```docker run -p 8000:8000 --name MyEcom-API myecom```
 ## API Documentation 🔖
 - Schema at:
   - ```/api/schmea/```
