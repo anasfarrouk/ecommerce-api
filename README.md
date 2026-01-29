@@ -28,6 +28,11 @@ Cloud native RESTful API for an e-commerce platform supporting products, carts, 
 - Production (example using gunicorn):
   - ```pip install gunicorn```
   - ```gunicorn project.wsgi:application --bind 0.0.0.0:8000```
+## Running (Docker) 🐳
+- Build the Docker image:
+  - ```docker build -t myecom .```
+- Run the Docker container:
+  - ```docker run -p 8000:8000 --name MyEcom-API myecom```
 ## API Documentation 🔖
 - Schema at:
   - ```/api/schmea/```
@@ -38,7 +43,7 @@ Cloud native RESTful API for an e-commerce platform supporting products, carts, 
 ## Testing 🧪
 - Run tests: ```python manage.py test```
 ## Deployment notes 🗒
-- Set environment variables in production (SECRET_KEY, DATABASE_URL, JWT_SECRET_KEY, STRIPE keys).
+- Set environment variables in production (SECRET_KEY, DATABASE_URL, STRIPE keys).
 - Check deploy readiness:
   - ```python manage.py check --deploy```
 - Run migrations and collectstatic:
