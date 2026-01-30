@@ -1,6 +1,7 @@
 # My-Ecom API 🛒
 Cloud native RESTful API for an e-commerce platform supporting products, carts, orders, Stripe payments, and user auth.
 <img src="./My-Ecom.png" style="width:100%">
+This project was inspired by [roadmap.sh](https://roadmap.sh/projects/ecommerce-api) community.
 ## Quick Start ⚡️
 - ```git clone ```
 - ```cd ecommerce-api```
